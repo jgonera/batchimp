@@ -1,0 +1,6 @@
+# Ignore /temp dir
+/temp/
+# Ignore Python compiled files
+*.pyc
+# Ignore backup and temporary files
+*~
