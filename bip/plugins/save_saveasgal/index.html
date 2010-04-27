@@ -1,0 +1,23 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+		<meta name="author" content="Juliusz Gonera" />
+		<title>Gallery</title>
+		<!--[if gte IE 6]><!-->
+		<style type="text/css" media="screen">
+		@import "design/screen.css";
+		@import "design/thickbox.css";
+		</style>
+		<script type="text/javascript" src="design/jquery.js"></script>
+		<script type="text/javascript" src="design/thickbox.js"></script>
+		<!--<![endif]--> 
+	</head>
+	<body>
+		<h1>Gallery: <?php echo(basename(getcwd())) ?></h1>
+		
+		<ul>
+			<li><a class="thickbox" rel="gallery" href="'.$file.'"><img src="thumbnails/'.$file.'" alt="Thumbnail" /> <span>'.$file.'</span></a></li>
+		</ul>
+	</body>
+</html>
