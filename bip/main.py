@@ -10,6 +10,7 @@ import subprocess
 import gobject
 import imp
 import tempfile
+import urllib
 from threading import Thread
 
 from bip.process import ProcessWindow
@@ -36,6 +37,8 @@ class ThumbnailsThread(Thread):
 
 
 class MainWindow(object):
+	TARGET_TYPE_TEXT = 1
+	
 	def test(self, widget, data=None):
 		print "test"
 		
@@ -59,6 +62,8 @@ class MainWindow(object):
 		self.files_store.set_sort_column_id(1, gtk.SORT_ASCENDING)
 		
 		self.files_view = self.builder.get_object("files_view")
+		self.files_view.drag_dest_set(gtk.DEST_DEFAULT_MOTION | gtk.DEST_DEFAULT_HIGHLIGHT | gtk.DEST_DEFAULT_DROP,
+			[("text/plain", 0, self.TARGET_TYPE_TEXT)], gtk.gdk.ACTION_COPY)
 		
 		self.filechooserdialog = self.builder.get_object("filechooserdialog")
 		self.aboutdialog = self.builder.get_object("aboutdialog")
@@ -127,6 +132,11 @@ class MainWindow(object):
 		if os.path.isfile(self.filechooserdialog.get_filename()):
 			self.filechooserdialog.hide()
 			self.add_files(self.filechooserdialog.get_filenames())
+	
+	def on_drag_data_received(self, widget, context, x, y, selection, info, time):
+		files = selection.data.replace("file://", "").split()
+		files = map(lambda f: urllib.unquote(f), files)
+		self.add_files(files)
 	
 	def add_files(self, items):
 		for item in items:

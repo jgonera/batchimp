@@ -259,6 +259,7 @@
                     <property name="tooltip_column">2</property>
                     <signal name="item_activated" handler="open_file"/>
                     <signal name="selection_changed" handler="set_sensitivity"/>
+                    <signal name="drag_data_received" handler="on_drag_data_received"/>
                     <child>
                       <object class="GtkCellRendererPixbuf" id="files_thumbnail"/>
                       <attributes>
