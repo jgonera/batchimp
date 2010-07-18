@@ -9,6 +9,7 @@ import random
 import subprocess
 import gobject
 import imp
+import tempfile
 from threading import Thread
 
 from bip.process import ProcessWindow
@@ -43,8 +44,7 @@ class MainWindow(object):
 	
 		gobject.threads_init()
 
-		# TODO: change to Python's temp file
-		self.tmp_file = '/tmp/bip' + str(random.randint(10000000, 99999999))
+		self.tmp_file = tempfile.NamedTemporaryFile()
 	
 		self.builder = gtk.Builder()
 		
@@ -108,8 +108,7 @@ class MainWindow(object):
 				self.plugins_store.append(self.plugins_store_save, (plugin.NAME, len(self.plugins)-1, True))
 		
 	def on_quit(self, widget, data=None):
-		if os.path.exists(self.tmp_file):
-			os.remove(self.tmp_file)
+		self.tmp_file.close()
 			
 		gtk.main_quit()
 	
@@ -136,7 +135,7 @@ class MainWindow(object):
 			
 			self.files_store.append((None, os.path.basename(item), item))
 		
-		thumbnail_thread = ThumbnailsThread(self.files_store, self.tmp_file)
+		thumbnail_thread = ThumbnailsThread(self.files_store, self.tmp_file.name)
 		thumbnail_thread.daemon = True
 		thumbnail_thread.start()
 	
@@ -179,7 +178,7 @@ class MainWindow(object):
 	def add_operation(self, widget, data=None):
 		plugin_id = self.plugins_store.get_value(self.plugins_combobox.get_active_iter(), 1)
 		plugin = self.plugins[plugin_id]
-		self.operations[self.operation_id] = plugin.Plugin(self.tmp_file)
+		self.operations[self.operation_id] = plugin.Plugin(self.tmp_file.name)
 		self.operations_store.append((plugin.NAME, self.operation_id, plugin.TYPE == "save"))
 		
 		self.operation_id = self.operation_id + 1
