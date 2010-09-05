@@ -294,6 +294,22 @@
                     <property name="icon_size">1</property>
                     <property name="icon_size_set">True</property>
                     <child>
+                      <object class="GtkToolItem" id="toolbutton3">
+                        <property name="visible">True</property>
+                        <child>
+                          <object class="GtkLabel" id="label1">
+                            <property name="visible">True</property>
+                            <property name="xpad">6</property>
+                            <property name="label" translatable="yes">Operation:</property>
+                          </object>
+                        </child>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="homogeneous">True</property>
+                      </packing>
+                    </child>
+                    <child>
                       <object class="GtkToolItem" id="plugins_toolitem">
                         <property name="visible">True</property>
                         <child>
