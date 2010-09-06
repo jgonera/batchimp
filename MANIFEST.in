@@ -1,0 +1,2 @@
+recursive-include batchimpapp *
+global-exclude *.pyc *.pyo

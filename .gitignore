@@ -1,6 +1,9 @@
-# Ignore /temp dir
+# Ignore /temp and /dist dir
 /temp/
+/dist/
 # Ignore Python compiled files
 *.pyc
 # Ignore backup and temporary files
 *~
+# Ignore the generated MANIFEST
+MANIFEST

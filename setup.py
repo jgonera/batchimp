@@ -1,10 +1,9 @@
 #!/usr/bin/env python
-# Batch Image Processor's setup.py
+# BatchImP's setup.py
 from distutils.core import setup
 
 setup(
-	name = "bip",
-	packages = ["bip"],
+	name = "batchimp",
 	version = "0.1",
 	description = "Graphical utility for performing batch operations on images (using ImageMagick)",
 	author = "Juliusz Gonera",
@@ -25,9 +24,15 @@ setup(
 		"Topic :: Multimedia :: Graphics :: Graphics Conversion"
 	],
 	long_description = open("README.txt").read(),
+	license = "GPLv3",
 	
-	scripts = ['bip.py'],
+	packages = ["batchimpapp", "batchimpapp.plugins"],
+	package_data = {
+		'': ['*.xml'],
+		'batchimpapp.plugins': ['*']
+    },
+	scripts = ['batchimp'],
 	data_files = [
-		('bin', ['bip.py'])
+		('bin', ['batchimp'])
 	]
 )
