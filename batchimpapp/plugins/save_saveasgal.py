@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from batchimpapp.pluginbase import PluginBase
+from batchimpapp.pluginbase import PluginBase, PluginError
 import pygtk
 pygtk.require("2.0")
 import gtk
@@ -33,6 +33,9 @@ class Plugin(PluginBase):
 		self.directory = os.path.join(self.directory_chooser.get_current_folder(), 'gallery')
 		gallery_name = self.gallery_name_entry.get_text()
 		
+		if os.path.exists(self.directory):
+			raise PluginError("A gallery with a given name already exists in the given directory.")
+		
 		os.mkdir(self.directory)
 		os.mkdir(os.path.join(self.directory, 'thumbnails'))
 		os.mkdir(os.path.join(self.directory, 'images'))
@@ -57,7 +60,6 @@ class Plugin(PluginBase):
 				<h1>''' + gallery_name + '''</h1>
 		
 				<ul>'''
-		
 		
 	
 	def process(self, current_path, original_path):

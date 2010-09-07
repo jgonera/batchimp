@@ -10,6 +10,8 @@ import subprocess
 from threading import Thread
 import time
 
+from batchimpapp.pluginbase import PluginError
+
 class ProcessThread(Thread):
 	def __init__(self, progress_window, main_window):
 		Thread.__init__(self)
@@ -26,7 +28,11 @@ class ProcessThread(Thread):
 		self.progress_window.total_progressbar.set_fraction(0.0)
 		
 		for plugin_id, plugin in self.main_window.operations.items():
-			plugin.prepare()
+			try:
+				plugin.prepare()
+			except PluginError as e:
+				gobject.idle_add(self.progress_window.show_error, e.message)
+				self.running = False
 		
 		for item in self.main_window.files_store:
 			self.progress_window.current_progressbar.set_text(item[1])
@@ -42,7 +48,11 @@ class ProcessThread(Thread):
 				
 				plugin = self.main_window.operations[operation[1]]
 				
-				current_path = plugin.process(current_path, original_path)
+				try:
+					current_path = plugin.process(current_path, original_path)
+				except PluginError as e:
+					gobject.idle_add(self.progress_window.show_error, e.message)
+					self.running = False
 				
 				self.progress_window.current_progressbar.set_fraction(self.progress_window.current_progressbar.get_fraction() + current_step)
 				self.progress_window.total_progressbar.set_fraction(self.progress_window.total_progressbar.get_fraction() + total_step)
@@ -51,7 +61,12 @@ class ProcessThread(Thread):
 		self.progress_window.current_progressbar.set_fraction(0.0)
 		
 		for plugin_id, plugin in self.main_window.operations.items():
-			plugin.finalize()
+			try:
+				plugin.finalize()
+			except PluginError as e:
+				gobject.idle_add(self.progress_window.show_error, e.message)
+				self.running = False
+			
 			self.progress_window.current_progressbar.set_fraction(self.progress_window.current_progressbar.get_fraction() + current_step)
 		
 		print time.time() - start_time
@@ -80,6 +95,18 @@ class ProcessWindow(object):
 		self.processing_thread = ProcessThread(self, self.main_window)
 		self.processing_thread.daemon = True
 		self.processing_thread.start()
+	
+	def show_error(self, message):
+		dialog = gtk.MessageDialog(
+			self.window,
+			gtk.DIALOG_MODAL,
+			gtk.MESSAGE_ERROR,
+			gtk.BUTTONS_OK,
+			message)
+
+		self.window.hide()
+		dialog.run()
+		dialog.destroy()
 	
 	def close(self, widget, data=None):
 		dialog = gtk.MessageDialog(

@@ -5,12 +5,16 @@ import pygtk
 pygtk.require("2.0")
 import gtk
 
+class PluginError(Exception):
+	def __init__(self, message):
+		self.message = message
+
 class PluginBase(object):
 	def __init__(self, tmp_file):
 		pass
 	
 	def prepare(self):
-		pass
+		return True
 	
 	def show_settings(self):
 		dialog = gtk.MessageDialog(
@@ -27,5 +31,4 @@ class PluginBase(object):
 		raise NotImplementedError("Need to define 'process' method!")
 	
 	def finalize(self):
-		pass
-		
+		return True
