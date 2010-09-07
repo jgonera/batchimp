@@ -9,7 +9,7 @@ import subprocess
 import os.path
 
 NAME = "Levels"
-TYPE = "change"
+
 
 class Plugin(PluginBase):
 	def __init__(self, tmp_file):

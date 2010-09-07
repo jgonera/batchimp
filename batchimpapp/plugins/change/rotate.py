@@ -9,7 +9,7 @@ import subprocess
 import os.path
 
 NAME = "Rotate"
-TYPE = "change"
+
 
 MAX_COLOR_VALUE = 65535
 

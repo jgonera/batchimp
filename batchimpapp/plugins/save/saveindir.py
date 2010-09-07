@@ -9,7 +9,7 @@ import subprocess
 import os.path
 
 NAME = "Save in a directory"
-TYPE = "save"
+
 
 class Plugin(PluginBase):
 	def __init__(self, tmp_file):

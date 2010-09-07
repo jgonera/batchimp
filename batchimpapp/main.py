@@ -70,8 +70,8 @@ class MainWindow(object):
 		
 		self.plugins_combobox = self.builder.get_object("plugins_combobox")
 		self.plugins_store = self.builder.get_object("plugins_store")
-		self.plugins_store_change = self.plugins_store.append(None, ('Change', 0, False))
-		self.plugins_store_save = self.plugins_store.append(None, ('Save', 0, False))
+		self.plugins_store_change = self.plugins_store.append(None, ('Change', 0, False, False))
+		self.plugins_store_save = self.plugins_store.append(None, ('Save', 0, False, False))
 		
 		self.operations_view = self.builder.get_object("operations_view")
 		self.operations_view.get_selection().set_mode(gtk.SELECTION_MULTIPLE)
@@ -94,23 +94,25 @@ class MainWindow(object):
 	def load_plugins(self):
 		global base_dir
 		
-		plugins_dir = os.path.join(base_dir, 'plugins')
-		dir_list = os.listdir(plugins_dir)
+		plugins_dirs = [
+			[os.path.join(base_dir, 'plugins', 'change'), self.plugins_store_change, False],
+			[os.path.join(base_dir, 'plugins', 'save'), self.plugins_store_save, True]
+		]
 		
-		for item in sorted(dir_list):
-			(name, ext) = os.path.splitext(item)
-			plugin_file = os.path.join(plugins_dir, item)
+		for plugins_dir in plugins_dirs:
+			dir_list = os.listdir(plugins_dir[0])
+		
+			for item in sorted(dir_list):
+				(name, ext) = os.path.splitext(item)
+				plugin_file = os.path.join(plugins_dir[0], item)
 			
-			if not os.path.isfile(plugin_file) or not ext == '.py' or name == '__init__':
-				continue
+				if not os.path.isfile(plugin_file) or not ext == '.py' or name == '__init__':
+					continue
 			
-			plugin = imp.load_source(name, plugin_file)
-			self.plugins.append(plugin)
-			
-			if plugin.TYPE == "change":
-				self.plugins_store.append(self.plugins_store_change, (plugin.NAME, len(self.plugins)-1, True))
-			elif plugin.TYPE == "save":
-				self.plugins_store.append(self.plugins_store_save, (plugin.NAME, len(self.plugins)-1, True))
+				plugin = imp.load_source(name, plugin_file)
+				self.plugins.append(plugin)
+
+				self.plugins_store.append(plugins_dir[1], (plugin.NAME, len(self.plugins)-1, plugins_dir[2], True))
 		
 	def on_quit(self, widget, data=None):
 		self.tmp_file.close()
@@ -187,11 +189,12 @@ class MainWindow(object):
 	
 	def add_operation(self, widget, data=None):
 		plugin_id = self.plugins_store.get_value(self.plugins_combobox.get_active_iter(), 1)
+		plugin_save = self.plugins_store.get_value(self.plugins_combobox.get_active_iter(), 2)
 		plugin = self.plugins[plugin_id]
 		self.operations[self.operation_id] = plugin.Plugin(self.tmp_file.name)
-		self.operations_store.append((plugin.NAME, self.operation_id, plugin.TYPE == "save"))
+		self.operations_store.append((plugin.NAME, self.operation_id, plugin_save))
 		
-		self.operation_id = self.operation_id + 1
+		self.operation_id += 1
 		
 	def remove_operation(self, widget, data=None):
 		selection = self.operations_view.get_selection()

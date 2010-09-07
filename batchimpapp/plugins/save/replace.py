@@ -5,7 +5,7 @@ from batchimpapp.pluginbase import PluginBase
 import subprocess
 
 NAME = "Replace original files"
-TYPE = "save"
+
 
 class Plugin(PluginBase):
 	def process(self, current_path, original_path):

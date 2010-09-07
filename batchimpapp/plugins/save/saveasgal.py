@@ -10,7 +10,7 @@ import os
 from zipfile import ZipFile
 
 NAME = "Save as a web gallery"
-TYPE = "save"
+
 
 class Plugin(PluginBase):
 	def __init__(self, tmp_file):
@@ -41,7 +41,7 @@ class Plugin(PluginBase):
 		os.mkdir(os.path.join(self.directory, 'images'))
 		ZipFile(os.path.splitext(__file__)[0] + '.zip', 'r').extractall(self.directory)
 		
-		self.html = '''<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+		self.html = '''<!DOChtml PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 		<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 			<head>
 				<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />

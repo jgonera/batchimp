@@ -34,6 +34,8 @@
       <column type="gchararray"/>
       <!-- column-name Id -->
       <column type="guint"/>
+      <!-- column-name Save -->
+      <column type="gboolean"/>
       <!-- column-name Sensitive -->
       <column type="gboolean"/>
     </columns>
@@ -320,7 +322,7 @@
                             <child>
                               <object class="GtkCellRendererText" id="plugins_name"/>
                               <attributes>
-                                <attribute name="sensitive">2</attribute>
+                                <attribute name="sensitive">3</attribute>
                                 <attribute name="text">0</attribute>
                               </attributes>
                             </child>
