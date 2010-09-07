@@ -101,7 +101,7 @@ class MainWindow(object):
 			(name, ext) = os.path.splitext(item)
 			plugin_file = os.path.join(plugins_dir, item)
 			
-			if not os.path.isfile(plugin_file) or not ext == '.py':
+			if not os.path.isfile(plugin_file) or not ext == '.py' or name == '__init__':
 				continue
 			
 			plugin = imp.load_source(name, plugin_file)
