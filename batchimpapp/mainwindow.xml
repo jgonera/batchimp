@@ -186,7 +186,8 @@
               <object class="GtkToolButton" id="add_files_toolbutton">
                 <property name="visible">True</property>
                 <property name="tooltip_text" translatable="yes">Add files</property>
-                <property name="label" translatable="yes">Add</property>
+                <property name="is_important">True</property>
+                <property name="label" translatable="yes">Add Files</property>
                 <property name="use_underline">True</property>
                 <property name="stock_id">gtk-add</property>
                 <signal name="clicked" handler="show_filechooserdialog"/>
@@ -200,7 +201,7 @@
               <object class="GtkToolButton" id="remove_files_toolbutton">
                 <property name="visible">True</property>
                 <property name="tooltip_text" translatable="yes">Remove selected files</property>
-                <property name="label" translatable="yes">Remove</property>
+                <property name="label" translatable="yes">Remove Files</property>
                 <property name="use_underline">True</property>
                 <property name="stock_id">gtk-remove</property>
                 <signal name="clicked" handler="remove_files"/>
@@ -223,6 +224,7 @@
               <object class="GtkToolButton" id="apply_toolbutton">
                 <property name="visible">True</property>
                 <property name="tooltip_text" translatable="yes">Apply all operations</property>
+                <property name="is_important">True</property>
                 <property name="label" translatable="yes">Apply</property>
                 <property name="use_underline">True</property>
                 <property name="stock_id">gtk-apply</property>
