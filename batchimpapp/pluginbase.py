@@ -55,8 +55,10 @@ class PluginBaseSettings(PluginBase):
 		self.advanced_table = self.builder.get_object("advanced_table")
 		self.advanced_expander = self.builder.get_object("advanced_expander")
 		
-		self.main_pos = 0
-		self.advanced_pos = 0
+		self.main_y = -1
+		self.main_x = 0
+		self.advanced_y = -1
+		self.advanced_x = 0
 		self._settings_getters = {}
 		
 		PluginBase.__init__(self, tmp_file, settings)
@@ -76,27 +78,33 @@ class PluginBaseSettings(PluginBase):
 	
 	def _set_getter(self, getter, **args):
 		self._settings_getters[args['name']] = getter
+		
+	def _add_widget(self, widget, width=1, **args):
+		if args.get('advanced'):
+			self.advanced_table.attach(widget, self.advanced_x, self.advanced_x+width, self.advanced_y, self.advanced_y+1)
+			self.advanced_expander.show()
+			self.advanced_x += width
+		else:
+			self.main_table.attach(widget, self.main_x, self.main_x+width, self.main_y, self.main_y+1)
+			self.main_x += width
+		widget.show()
 	
 	def add_label(self, **args):
+		if not args.get('same_row'):
+			if args.get('advanced'):
+				self.advanced_y += 1
+				self.advanced_x = 0
+			else:
+				self.main_y += 1
+				self.main_x = 0
+	
 		if 'label' in args:
 			label_widget = gtk.Label(args['label'])
 			label_widget.set_alignment(0.0, 0.5)
-			if 'advanced' in args:
-				self.advanced_table.attach(label_widget, 0, 1, self.advanced_pos, self.advanced_pos+1, gtk.FILL)
-			else:
-				self.main_table.attach(label_widget, 0, 1, self.main_pos, self.main_pos+1, gtk.FILL)
-			label_widget.show()
+			self._add_widget(label_widget, **args)
 	
-	def add_widget(self, widget, left=1, right=2, **args):
-		if 'advanced' in args:
-			self.advanced_table.attach(widget, left, right, self.advanced_pos, self.advanced_pos+1)
-			self.advanced_pos += 1
-			self.advanced_expander.show()
-		else:
-			self.main_table.attach(widget, left, right, self.main_pos, self.main_pos+1)
-			self.main_pos += 1
-		widget.show()
-		
+	def add_field(self, widget, width=1, **args):
+		self._add_widget(widget, width, **args)
 		self.settings[args['name']] = args['value']
 
 	def add_spin_button(self, integer=False, minimum=0, maximum=1000000, **args):
@@ -104,7 +112,7 @@ class PluginBaseSettings(PluginBase):
 		
 		widget = gtk.SpinButton(gtk.Adjustment(args['value'], minimum, maximum, 1, 10))
 		widget.set_numeric(True)
-		self.add_widget(widget, **args)
+		self.add_field(widget, **args)
 		
 		if integer:
 			self._set_getter(widget.get_value_as_int, **args)
@@ -114,6 +122,9 @@ class PluginBaseSettings(PluginBase):
 	def add_check_button(self, **args):
 		widget = gtk.CheckButton(args['label'])
 		widget.set_active(args['value'])
-		self.add_widget(widget, 0, 2, **args)
+		self.add_field(widget, 2, **args)
 		self._set_getter(widget.get_active, **args)
+
+
+	
 		
