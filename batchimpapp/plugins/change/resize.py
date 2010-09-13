@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from batchimpapp.pluginbase import PluginBaseSettings
+from batchimpapp.pluginbase import PluginBaseSettings, SpinButtonField, CheckButtonField, ComboBoxField
 import subprocess
 
 NAME = "Resize"
@@ -10,22 +10,39 @@ __version__ = '0.1'
 
 class Plugin(PluginBaseSettings):
 	def init(self):
-		self.add_spin_button(
+		SpinButtonField(self,
 			name = 'width',
 			label = 'Width:',
 			value = 800,
 			integer = True
 		)
-		self.add_spin_button(
+		SpinButtonField(self,
 			name = 'height',
 			label = 'Height:',
 			value = 600,
 			integer = True
 		)
-		self.add_check_button(
+		ComboBoxField(self,
+			same_row = True,
+			name = 'unit',
+			options = ['px', '%']
+		)
+		CheckButtonField(self,
 			name = 'keep_ratio',
 			label = 'Keep aspect _ratio',
 			value = True
+		)
+		
+		CheckButtonField(self,
+			advanced = True,
+			name = 'fastest_algorithm',
+			label = 'Use the _fastest algorithm (ignores filter setting)',
+			value = False
+		)
+		ComboBoxField(self,
+			advanced = True,
+			name = 'filter',
+			options = ['anana', 'uuu']
 		)
 	
 	def process(self, current_path, original_path):

@@ -4,6 +4,7 @@
 import pygtk
 pygtk.require("2.0")
 import gtk
+import gobject
 import os.path
 from pprint import PrettyPrinter as pp
 
@@ -75,56 +76,79 @@ class PluginBaseSettings(PluginBase):
 	
 		self.settings_window.hide()
 		return True
-	
-	def _set_getter(self, getter, **args):
-		self._settings_getters[args['name']] = getter
+
+
+class FieldBase(object):
+	def __init__(self, plugin, **kwargs):
+		self.plugin = plugin
+		self.args = kwargs
 		
-	def _add_widget(self, widget, width=1, **args):
-		if args.get('advanced'):
-			self.advanced_table.attach(widget, self.advanced_x, self.advanced_x+width, self.advanced_y, self.advanced_y+1)
-			self.advanced_expander.show()
-			self.advanced_x += width
+		if not self.args.get('same_row'):
+			if self.args.get('advanced'):
+				self.plugin.advanced_y += 1
+				self.plugin.advanced_x = 0
+			else:
+				self.plugin.main_y += 1
+				self.plugin.main_x = 0
+		
+		self.init(**kwargs)
+		
+		self.plugin.settings[self.args['name']] = self.args['value']
+	
+	def _set_getter(self, getter):
+		self.plugin._settings_getters[self.args['name']] = getter
+		
+	def _add_widget(self, widget, width=1):
+		if self.args.get('advanced'):
+			self.plugin.advanced_table.attach(widget, self.plugin.advanced_x, self.plugin.advanced_x+width, self.plugin.advanced_y, self.plugin.advanced_y+1)
+			self.plugin.advanced_expander.show()
+			self.plugin.advanced_x += width
 		else:
-			self.main_table.attach(widget, self.main_x, self.main_x+width, self.main_y, self.main_y+1)
-			self.main_x += width
+			self.plugin.main_table.attach(widget, self.plugin.main_x, self.plugin.main_x+width, self.plugin.main_y, self.plugin.main_y+1)
+			self.plugin.main_x += width
 		widget.show()
 	
-	def add_label(self, **args):
-		if not args.get('same_row'):
-			if args.get('advanced'):
-				self.advanced_y += 1
-				self.advanced_x = 0
-			else:
-				self.main_y += 1
-				self.main_x = 0
-	
-		if 'label' in args:
-			label_widget = gtk.Label(args['label'])
+	def _add_label(self):
+		if 'label' in self.args:
+			label_widget = gtk.Label(self.args['label'])
 			label_widget.set_alignment(0.0, 0.5)
-			self._add_widget(label_widget, **args)
-	
-	def add_field(self, widget, width=1, **args):
-		self._add_widget(widget, width, **args)
-		self.settings[args['name']] = args['value']
+			self._add_widget(label_widget)
 
-	def add_spin_button(self, integer=False, minimum=0, maximum=1000000, **args):
-		self.add_label(**args)
+
+class SpinButtonField(FieldBase):
+	def init(self, integer=False, minimum=0, maximum=1000000, **kwargs):
+		self._add_label()
 		
-		widget = gtk.SpinButton(gtk.Adjustment(args['value'], minimum, maximum, 1, 10))
+		widget = gtk.SpinButton(gtk.Adjustment(self.args['value'], minimum, maximum, 1, 10))
 		widget.set_numeric(True)
-		self.add_field(widget, **args)
+		self._add_widget(widget)
 		
 		if integer:
-			self._set_getter(widget.get_value_as_int, **args)
+			self._set_getter(widget.get_value_as_int)
 		else:
-			self._set_getter(widget.get_value, **args)
-	
-	def add_check_button(self, **args):
-		widget = gtk.CheckButton(args['label'])
-		widget.set_active(args['value'])
-		self.add_field(widget, 2, **args)
-		self._set_getter(widget.get_active, **args)
+			self._set_getter(widget.get_value)
 
 
-	
+class CheckButtonField(FieldBase):
+	def init(self, **kwargs):
+		widget = gtk.CheckButton(self.args['label'])
+		widget.set_active(self.args['value'])
+		self._add_widget(widget, 2)
+		self._set_getter(widget.get_active)
+
+
+class ComboBoxField(FieldBase):
+	def init(self, **kwargs):
+		self._add_label()
+		
+		widget = gtk.combo_box_new_text()
+		for option in kwargs['options']:
+			widget.append_text(option)
+		widget.set_active(0)
+		
+		self._add_widget(widget)
+		self._set_getter(widget.get_active_text)
+		
+		if 'value' not in self.args:
+			self.args['value'] = kwargs['options'][0]
 		
