@@ -98,13 +98,29 @@ class FieldBase(object):
 	def _set_getter(self, getter):
 		self.plugin._settings_getters[self.args['name']] = getter
 		
-	def _add_widget(self, widget, width=1):
+	def _add_widget(self, widget, width=1, xoptions=gtk.EXPAND|gtk.FILL, yoptions=gtk.FILL):
 		if self.args.get('advanced'):
-			self.plugin.advanced_table.attach(widget, self.plugin.advanced_x, self.plugin.advanced_x+width, self.plugin.advanced_y, self.plugin.advanced_y+1)
+			self.plugin.advanced_table.attach(
+				widget,
+				self.plugin.advanced_x,
+				self.plugin.advanced_x+width,
+				self.plugin.advanced_y,
+				self.plugin.advanced_y+1,
+				xoptions,
+				yoptions
+			)
 			self.plugin.advanced_expander.show()
 			self.plugin.advanced_x += width
 		else:
-			self.plugin.main_table.attach(widget, self.plugin.main_x, self.plugin.main_x+width, self.plugin.main_y, self.plugin.main_y+1)
+			self.plugin.main_table.attach(
+				widget,
+				self.plugin.main_x,
+				self.plugin.main_x+width,
+				self.plugin.main_y,
+				self.plugin.main_y+1,
+				xoptions,
+				yoptions
+			)
 			self.plugin.main_x += width
 		widget.show()
 	
@@ -112,7 +128,7 @@ class FieldBase(object):
 		if 'label' in self.args:
 			label_widget = gtk.Label(self.args['label'])
 			label_widget.set_alignment(0.0, 0.5)
-			self._add_widget(label_widget)
+			self._add_widget(label_widget, 1, gtk.FILL)
 
 
 class SpinButtonField(FieldBase):

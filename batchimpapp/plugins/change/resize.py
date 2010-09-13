@@ -10,6 +10,7 @@ __version__ = '0.1'
 
 class Plugin(PluginBaseSettings):
 	def init(self):
+		# Main settings
 		SpinButtonField(self,
 			name = 'width',
 			label = 'Width:',
@@ -33,6 +34,7 @@ class Plugin(PluginBaseSettings):
 			value = True
 		)
 		
+		# Advanced settings
 		CheckButtonField(self,
 			advanced = True,
 			name = 'fastest_algorithm',
@@ -42,6 +44,7 @@ class Plugin(PluginBaseSettings):
 		ComboBoxField(self,
 			advanced = True,
 			name = 'filter',
+			label = 'Filter:',
 			options = ['anana', 'uuu']
 		)
 	
