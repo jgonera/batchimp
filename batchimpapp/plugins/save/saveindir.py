@@ -39,7 +39,7 @@ class Plugin(PluginBase):
 		file_name = file_name.replace("%e", original_ext)
 		
 		file_path = self.directory_chooser.get_current_folder() + "/" + file_name
-		subprocess.call(('convert', current_path, file_path))
+		subprocess.call(('gm', 'convert', current_path, file_path))
 		
 		return current_path
 

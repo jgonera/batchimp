@@ -37,26 +37,41 @@ class Plugin(PluginBaseSettings):
 		# Advanced settings
 		CheckButtonField(self,
 			advanced = True,
-			name = 'fastest_algorithm',
-			label = 'Use the _fastest algorithm (ignores filter setting)',
+			name = 'fastest_method',
+			label = 'Use the _fastest method (ignores filter setting)',
 			value = False
 		)
 		ComboBoxField(self,
 			advanced = True,
 			name = 'filter',
 			label = 'Filter:',
-			options = ['anana', 'uuu']
+			options = [
+				'Auto',
+				'Point',
+				'Box',
+				'Triangle',
+				'Hermite',
+				'Hanning',
+				'Hamming',
+				'Blackman',
+				'Gaussian',
+				'Quadratic',
+				'Cubic',
+				'Catrom',
+				'Mitchell',
+				'Lanczos',
+				'Bessel',
+				'Sinc'
+			]
 		)
 	
 	def process(self, current_path, original_path):
-		print self.settings['width']
-	
-		command = ['convert']
+		command = ['gm', 'convert']
 		
-		width = str(self.width())
-		height = str(self.height())
+		width = str(self.settings['width'])
+		height = str(self.settings['height'])
 		
-		if self.unit_combobox.get_active_text() == '%':
+		if self.settings['unit'] == '%':
 			geometry = width + '%x' + height + '%'
 		else:
 			size = width + 'x' + height
@@ -66,22 +81,20 @@ class Plugin(PluginBaseSettings):
 			
 		command.append(current_path)
 		
-		if not self.keep_ratio_checkbutton.get_active():
+		if not self.settings['keep_ratio']:
 			geometry = geometry + '!'
 		
-		if self.fastest_algorithm_checkbutton.get_active():
+		if self.settings['fastest_method']:
 			command.append('-scale')
 		else:
 			command.append('-resize')
 		command.append(geometry)
 		
-		filter_name = self.filter_combobox.get_active_text()
-		
-		if filter_name != 'Auto':
+		if self.settings['filter'] != 'Auto':
 			command.append('-filter')
-			command.append(filter_name)
+			command.append(self.settings['filter'])
 		
-		command.append('-auto-orient')
+		#command.append('-auto-orient')
 		command.append('bmp:' + self.tmp_file)
 		
 		subprocess.call(command)
