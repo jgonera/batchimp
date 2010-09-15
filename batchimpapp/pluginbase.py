@@ -9,7 +9,6 @@ pygtk.require("2.0")
 import gtk
 import gobject
 
-from pprint import PrettyPrinter as pp
 
 class PluginError(Exception):
 	def __init__(self, message):
@@ -17,12 +16,14 @@ class PluginError(Exception):
 
 
 class MagickCommand(object):
-	def __init__(self, *args):
-		self.args = ['gm']
-		self.args.extend(args)
+	def __init__(self, graphics_magick=True):
+		if graphics_magick:
+			self.args = ['gm']
+		else:
+			self.args = []
 	
-	def append(self, arg):
-		self.args.append(arg)
+	def append(self, *args):
+		self.args.extend(args)
 		return self
 	
 	def run(self):
@@ -189,13 +190,13 @@ class CheckButtonField(FieldBase):
 
 
 class ComboBoxField(FieldBase):
-	def init(self, options, **kwargs):
+	def init(self, options, active_option=0, **kwargs):
 		self._add_label()
 		
 		self.widget = gtk.combo_box_new_text()
 		for option in options:
 			self.widget.append_text(option)
-		self.widget.set_active(0)
+		self.widget.set_active(active_option)
 		
 		self._add_widget(self.widget)
 		self._set_getter(self.widget.get_active_text)

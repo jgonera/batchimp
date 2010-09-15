@@ -3,10 +3,6 @@
 
 import os.path
 
-import pygtk
-pygtk.require("2.0")
-import gtk
-
 from batchimpapp.pluginbase import PluginSettingsBase, MagickCommand, \
 FileChooserButtonField, EntryField, LabelField
 
@@ -14,6 +10,7 @@ NAME = 'Save in a directory'
 AUTHOR = 'Juliusz Gonera'
 __version__ = '0.1'
 __api_version__ = '0.1'
+
 
 class Plugin(PluginSettingsBase):
 	def init(self):
@@ -49,7 +46,7 @@ class Plugin(PluginSettingsBase):
 		
 		file_path = os.path.join(self.settings['directory'], file_name)
 		
-		MagickCommand('convert', current_path, file_path).run()
+		MagickCommand().append('convert', current_path, file_path).run()
 		
 		return current_path
 

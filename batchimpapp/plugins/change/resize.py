@@ -9,6 +9,7 @@ AUTHOR = 'Juliusz Gonera'
 __version__ = '0.1'
 __api_version__ = '0.1'
 
+
 class Plugin(PluginSettingsBase):
 	def init(self):
 		# Main settings
@@ -67,7 +68,7 @@ class Plugin(PluginSettingsBase):
 		)
 	
 	def process(self, current_path, original_path, options):
-		command = MagickCommand('convert')
+		command = MagickCommand().append('convert')
 		
 		width = str(self.settings['width'])
 		height = str(self.settings['height'])
