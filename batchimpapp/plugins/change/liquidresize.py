@@ -15,14 +15,12 @@ class Plugin(PluginSettingsBase):
 		SpinButtonField(self,
 			name = 'width',
 			label = 'Width:',
-			value = 100,
-			integer = True
+			value = 100
 		)
 		SpinButtonField(self,
 			name = 'height',
 			label = 'Height:',
-			value = 100,
-			integer = True
+			value = 100
 		)
 		ComboBoxField(self,
 			same_row = True,

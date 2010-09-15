@@ -168,17 +168,30 @@ class EntryField(FieldBase):
 
 
 class SpinButtonField(FieldBase):
-	def init(self, value, integer=False, minimum=0, maximum=1000000, **kwargs):
+	def init(self, value, digits=0, minimum=0, maximum=1000000, **kwargs):
 		self._add_label()
 		
 		self.widget = gtk.SpinButton(gtk.Adjustment(value, minimum, maximum, 1, 10))
 		self.widget.set_numeric(True)
+		self.widget.set_digits(digits)
 		self._add_widget(self.widget)
 		
-		if integer:
+		if digits == 0:
 			self._set_getter(self.widget.get_value_as_int)
 		else:
 			self._set_getter(self.widget.get_value)
+
+
+class ScaleField(FieldBase):
+	def init(self, value, digits=0, minimum=0, maximum=1000000, **kwargs):
+		self._add_label()
+		
+		self.widget = gtk.HScale(gtk.Adjustment(value, minimum, maximum, 1, 10))
+		self.widget.set_digits(digits)
+		self.widget.set_value_pos(gtk.POS_RIGHT)
+		self._add_widget(self.widget)
+		
+		self._set_getter(self.widget.get_value)
 
 
 class CheckButtonField(FieldBase):
