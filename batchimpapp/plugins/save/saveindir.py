@@ -28,7 +28,7 @@ class Plugin(PluginBase):
 		self.settings_window.hide()
 		return True
 		
-	def process(self, current_path, original_path):
+	def process(self, current_path, original_path, options):
 		file_name = self.filename_entry.get_text()
 		original_file_name = os.path.basename(original_path)
 		(original_basename, original_ext) = os.path.splitext(original_file_name)

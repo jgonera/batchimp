@@ -1,10 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from batchimpapp.pluginbase import PluginBaseSettings, SpinButtonField, CheckButtonField, ComboBoxField
-import subprocess
+from batchimpapp.pluginbase import PluginBaseSettings, MagickCommand, \
+	SpinButtonField, CheckButtonField, ComboBoxField
 
-NAME = "Resize"
+NAME = 'Resize'
 __author__ = 'Juliusz Gonera'
 __version__ = '0.1'
 
@@ -65,8 +65,8 @@ class Plugin(PluginBaseSettings):
 			]
 		)
 	
-	def process(self, current_path, original_path):
-		command = ['gm', 'convert']
+	def process(self, current_path, original_path, options):
+		command = MagickCommand('convert')
 		
 		width = str(self.settings['width'])
 		height = str(self.settings['height'])
@@ -94,10 +94,9 @@ class Plugin(PluginBaseSettings):
 			command.append('-filter')
 			command.append(self.settings['filter'])
 		
-		#command.append('-auto-orient')
 		command.append('bmp:' + self.tmp_file)
 		
-		subprocess.call(command)
-			
+		command.run()
+		
 		return self.tmp_file
 

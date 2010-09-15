@@ -38,6 +38,7 @@ class ProcessThread(Thread):
 			self.progress_window.current_progressbar.set_text(item[1])
 			self.progress_window.current_progressbar.set_fraction(0.0)
 			
+			options = {}
 			current_path = original_path = item[2]
 			
 			# iterate through 'operations_store' instead of 'operations'
@@ -49,7 +50,7 @@ class ProcessThread(Thread):
 				plugin = self.main_window.operations[operation[1]]
 				
 				try:
-					current_path = plugin.process(current_path, original_path)
+					current_path = plugin.process(original_path=original_path, current_path=current_path, options=options)
 				except PluginError as e:
 					gobject.idle_add(self.progress_window.show_error, e.message)
 					self.running = False

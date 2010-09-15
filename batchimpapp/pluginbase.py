@@ -1,16 +1,30 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import os.path
+import subprocess
+
 import pygtk
 pygtk.require("2.0")
 import gtk
 import gobject
-import os.path
+
 from pprint import PrettyPrinter as pp
 
 class PluginError(Exception):
 	def __init__(self, message):
 		self.message = message
+
+
+class MagickCommand(object):
+	def __init__(self, command='convert'):
+		self.args = ['gm', command]
+	
+	def append(self, arg):
+		self.args.append(arg)
+	
+	def run(self):
+		subprocess.call(self.args)
 
 
 class PluginBase(object):
