@@ -1,14 +1,15 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from batchimpapp.pluginbase import PluginBaseSettings, MagickCommand, \
+from batchimpapp.pluginbase import PluginSettingsBase, MagickCommand, \
 	SpinButtonField, CheckButtonField, ComboBoxField
 
 NAME = 'Resize'
-__author__ = 'Juliusz Gonera'
+AUTHOR = 'Juliusz Gonera'
 __version__ = '0.1'
+__api_version__ = '0.1'
 
-class Plugin(PluginBaseSettings):
+class Plugin(PluginSettingsBase):
 	def init(self):
 		# Main settings
 		SpinButtonField(self,
