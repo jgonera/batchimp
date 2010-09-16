@@ -1,37 +1,34 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from batchimpapp.pluginbase import PluginBase, PluginError
-import pygtk
-pygtk.require("2.0")
-import gtk
-import subprocess
 import os
 from zipfile import ZipFile
 
-NAME = "Save as a web gallery"
+from batchimpapp.pluginbase import PluginSettingsBase, MagickCommand, \
+	PluginError, FileChooserButtonField, EntryField
+
+NAME = 'Save as a web gallery'
+AUTHOR = 'Juliusz Gonera'
+__version__ = '0.1'
+__api_version__ = '0.1'
 
 
-class Plugin(PluginBase):
-	def __init__(self, tmp_file):
-		self.builder = gtk.Builder()
-		self.builder.add_from_file(os.path.splitext(__file__)[0] + ".xml")
-		self.builder.connect_signals(self)
-
-		self.settings_window = self.builder.get_object("settings_window")
-		self.directory_chooser = self.builder.get_object("directory_chooser")
-		self.gallery_name_entry = self.builder.get_object("gallery_name_entry")
-		
-	def show_settings(self):
-		self.settings_window.show()
-		
-	def close_settings(self, widget, data=None):
-		self.settings_window.hide()
-		return True
+class Plugin(PluginSettingsBase):
+	def init(self):
+		FileChooserButtonField(self,
+			name = 'directory',
+			label = 'Directory:',
+			title = 'Select a directory',
+			action = FileChooserButtonField.SELECT_FOLDER
+		)
+		EntryField(self,
+			name = 'gallery_name',
+			label = 'Gallery name:',
+			value = 'Gallery'
+		)
 	
 	def prepare(self):
-		self.directory = os.path.join(self.directory_chooser.get_current_folder(), 'gallery')
-		gallery_name = self.gallery_name_entry.get_text()
+		self.directory = os.path.join(self.settings['directory'], self.settings['gallery_name'])
 		
 		if os.path.exists(self.directory):
 			raise PluginError("A gallery with a given name already exists in the given directory.")
@@ -46,7 +43,7 @@ class Plugin(PluginBase):
 			<head>
 				<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 				<meta name="generator" content="Batch Image Processor" />
-				<title>''' + gallery_name + '''</title>
+				<title>''' + self.settings['gallery_name'] + '''</title>
 				<!--[if gte IE 6]><!-->
 				<style type="text/css" media="screen">
 				@import "design/screen.css";
@@ -57,12 +54,12 @@ class Plugin(PluginBase):
 				<!--<![endif]--> 
 			</head>
 			<body>
-				<h1>''' + gallery_name + '''</h1>
+				<h1>''' + self.settings['gallery_name'] + '''</h1>
 		
 				<ul>'''
 		
 	
-	def process(self, current_path, original_path):
+	def process(self, current_path, original_path, options):
 		original_file_name = os.path.basename(original_path)
 		(original_basename, original_ext) = os.path.splitext(original_file_name)
 		

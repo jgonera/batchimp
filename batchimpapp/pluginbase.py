@@ -47,9 +47,6 @@ class PluginBase(object):
 	def init(self):
 		pass
 	
-	def prepare(self):
-		return True
-	
 	def show_settings(self):
 		dialog = gtk.MessageDialog(
 			None,
@@ -60,12 +57,15 @@ class PluginBase(object):
 			
 		dialog.run()
 		dialog.destroy()
+	
+	def prepare(self):
+		pass
 
-	def process(self, current_path, original_path):
+	def process(self, current_path, original_path, options):
 		raise NotImplementedError("Need to define 'process' method!")
 	
 	def finalize(self):
-		return True
+		pass
 
 
 class PluginSettingsBase(PluginBase):
@@ -86,6 +86,7 @@ class PluginSettingsBase(PluginBase):
 		self._settings_getters = {}
 		
 		PluginBase.__init__(self, tmp_file, settings)
+		self.show_settings()
 		
 	def init(self):
 		raise NotImplementedError("Need to initialize settings in 'init' method!")
