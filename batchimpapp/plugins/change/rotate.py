@@ -1,70 +1,59 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from batchimpapp.pluginbase import PluginBase
-import pygtk
-pygtk.require("2.0")
-import gtk
-import subprocess
-import os.path
+from batchimpapp.pluginbase import PluginSettingsBase, MagickCommand, \
+	SpinButtonField, ColorButtonField, RadioButtonsField
 
-NAME = "Rotate"
+NAME = 'Rotate'
+AUTHOR = 'Juliusz Gonera'
+__version__ = '0.1'
+__api_version__ = '0.1'
 
 
-MAX_COLOR_VALUE = 65535
-
-class Plugin(PluginBase):
-	def __init__(self, tmp_file):
-		self.tmp_file = tmp_file
+class Plugin(PluginSettingsBase):
+	def init(self):
+		SpinButtonField(self,
+			name = 'angle',
+			label = 'Angle:',
+			value = 0,
+			maximum = 360
+		)
 		
-		self.builder = gtk.Builder()
-		self.builder.add_from_file(os.path.splitext(__file__)[0] + ".xml")
-		self.builder.connect_signals(self)
-
-		self.settings_window = self.builder.get_object("settings_window")
-		self.angle_spinbutton = self.builder.get_object("angle_spinbutton")
-		self.always_radiobutton = self.builder.get_object("always_radiobutton")
-		self.width_radiobutton = self.builder.get_object("width_radiobutton")
-		self.height_radiobutton = self.builder.get_object("height_radiobutton")
-		self.background_colorbutton = self.builder.get_object("background_colorbutton")
+		ColorButtonField(self,
+			advanced = True,
+			name = 'background_color',
+			label = 'Background:'
+		)
+		RadioButtonsField(self,
+			advanced = True,
+			name = 'condition',
+			label = 'Rotate',
+			options = [
+				'Always',
+				'When width is greater than height',
+				'When height is greater than width'
+			]
+		)
 		
-		# don't know why it defaults to 0 even though it's set in Glade
-		self.background_colorbutton.set_alpha(MAX_COLOR_VALUE)
-			
-	def show_settings(self):
-		self.settings_window.show()
-		
-	def close_settings(self, widget, data=None):
-		self.settings_window.hide()
-
-		return True
-		
-	def process(self, current_path, original_path):
-		command = ['convert', current_path]
-		
-		color = self.background_colorbutton.get_color()
-		red = str(color.red*255/MAX_COLOR_VALUE)
-		green = str(color.green*255/MAX_COLOR_VALUE)
-		blue = str(color.blue*255/MAX_COLOR_VALUE)
-		alpha = str(self.background_colorbutton.get_alpha()*255/MAX_COLOR_VALUE)
+	def process(self, current_path, original_path, options):
+		command = MagickCommand().append('convert', current_path)
 		
 		command.append('-background')
-		command.append('rgba(' + red + ',' + green + ',' + blue + ',' + alpha + ')')
+		command.append_color(self.settings['background_color'])
 		
-		degrees = str(self.angle_spinbutton.get_value_as_int())
+		degrees = str(self.settings['angle'])
 		
-		if self.width_radiobutton.get_active():
+		if self.settings['condition'] == 1:
 			degrees = degrees + '>'
-		elif self.height_radiobutton.get_active():
+		elif self.settings['condition'] == 2:
 			degrees = degrees + '<'
 		
 		command.append('-rotate')
 		command.append(degrees)
 		
-		command.append('-auto-orient')
 		command.append('bmp:' + self.tmp_file)
 		
-		subprocess.call(command)
+		command.run()
 			
 		return self.tmp_file
 

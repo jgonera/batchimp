@@ -16,18 +16,24 @@ class PluginError(Exception):
 
 
 class MagickCommand(object):
-	def __init__(self, graphics_magick=True):
-		if graphics_magick:
+	def __init__(self, use_gm=True):
+		if use_gm and True: # TODO: change this to some setting in GUI
 			self.args = ['gm']
+			self.gm = True
 		else:
 			self.args = []
+			self.gm = False
 	
 	def append(self, *args):
 		self.args.extend(args)
 		return self
 	
+	def append_color(self, color):
+		self.args.append('rgba(' + str(color['red']) + ',' + str(color['green']) + ',' + str(color['blue']) + ',' + str(color['alpha']) + ')')
+		return self
+	
 	def run(self):
-		subprocess.call(self.args)
+		return subprocess.call(self.args)
 
 
 class PluginBase(object):
@@ -116,7 +122,7 @@ class FieldBase(object):
 	def _set_getter(self, getter):
 		self.plugin._settings_getters[self.args['name']] = getter
 		
-	def _add_widget(self, widget, width=1, xoptions=gtk.EXPAND|gtk.FILL, yoptions=gtk.FILL):
+	def _add_widget(self, widget, width=1, xoptions=gtk.EXPAND|gtk.FILL, yoptions=gtk.EXPAND|gtk.FILL, xpadding=0, ypadding=0):
 		if self.args.get('advanced'):
 			self.plugin.advanced_table.attach(
 				widget,
@@ -125,7 +131,9 @@ class FieldBase(object):
 				self.plugin.advanced_y,
 				self.plugin.advanced_y+1,
 				xoptions,
-				yoptions
+				yoptions,
+				xpadding,
+				ypadding
 			)
 			self.plugin.advanced_expander.show()
 			self.plugin.advanced_x += width
@@ -137,7 +145,9 @@ class FieldBase(object):
 				self.plugin.main_y,
 				self.plugin.main_y+1,
 				xoptions,
-				yoptions
+				yoptions,
+				xpadding,
+				ypadding
 			)
 			self.plugin.main_x += width
 		widget.show()
@@ -168,10 +178,10 @@ class EntryField(FieldBase):
 
 
 class SpinButtonField(FieldBase):
-	def init(self, value, digits=0, minimum=0, maximum=1000000, **kwargs):
+	def init(self, value, digits=0, minimum=0, maximum=1000000, step_increment=1, page_increment=10, climb_rate=0, **kwargs):
 		self._add_label()
 		
-		self.widget = gtk.SpinButton(gtk.Adjustment(value, minimum, maximum, 1, 10))
+		self.widget = gtk.SpinButton(gtk.Adjustment(value, minimum, maximum, step_increment, page_increment), climb_rate)
 		self.widget.set_numeric(True)
 		self.widget.set_digits(digits)
 		self._add_widget(self.widget)
@@ -189,7 +199,8 @@ class ScaleField(FieldBase):
 		self.widget = gtk.HScale(gtk.Adjustment(value, minimum, maximum, 1, 10))
 		self.widget.set_digits(digits)
 		self.widget.set_value_pos(gtk.POS_RIGHT)
-		self._add_widget(self.widget)
+		self.widget.set_size_request(150, -1)
+		self._add_widget(widget=self.widget, ypadding=3)
 		
 		self._set_getter(self.widget.get_value)
 
@@ -198,8 +209,37 @@ class CheckButtonField(FieldBase):
 	def init(self, value, label, **kwargs):
 		self.widget = gtk.CheckButton(label)
 		self.widget.set_active(value)
-		self._add_widget(self.widget, 2)
+		self._add_widget(widget=self.widget, width=2, ypadding=3)
 		self._set_getter(self.widget.get_active)
+
+
+class RadioButtonsField(FieldBase):
+	def init(self, label, options, active_option=0, **kwargs):
+		assert len(options) > 1
+		self._add_label()
+		
+		self.widget = gtk.VBox()
+		first_button = gtk.RadioButton(None, options[0])
+		self.widget.add(first_button)
+		first_button.show()
+		self.radio_buttons = [first_button]
+		for option in options[1:]:
+			button = gtk.RadioButton(first_button, option)
+			self.widget.add(button)
+			self.radio_buttons.append(button)
+			button.show()
+		
+		if 'value' not in self.args:
+			self.args['value'] = active_option
+		self.radio_buttons[self.args['value']].set_active(True)
+		
+		self._add_widget(self.widget)
+		self._set_getter(self.get_value)
+	
+	def get_value(self):
+		for i, button in enumerate(self.radio_buttons):
+			if button.get_active():
+				return i
 
 
 class ComboBoxField(FieldBase):
@@ -238,5 +278,43 @@ class FileChooserButtonField(FieldBase):
 		
 		if 'value' not in self.args:
 			self.args['value'] = self.widget.get_current_folder()
+
+
+class ColorButtonField(FieldBase):
+	MAX_COLOR_VALUE = 65535
+	
+	def init(self, use_alpha=False, use_16bit=False, **kwargs):
+		self.use_16bit = use_16bit
+		self._add_label()
 		
+		self.widget = gtk.ColorButton()
+		self.widget.set_use_alpha(use_alpha)
+		alignment = gtk.Alignment()
+		alignment.add(self.widget)
+		self.widget.show()
+		self._add_widget(alignment)
+		self._set_getter(self.get_value)
+		
+		if 'value' not in self.args:
+			self.args['value'] = self.get_value()
+	
+	def get_value(self):
+		color = self.widget.get_color()
+		
+		if self.use_16bit:
+			value = {
+				'red': color.red,
+				'green': color.green,
+				'blue': color.blue,
+				'alpha': self.widget.get_alpha()
+			}
+		else:
+			value = {
+				'red': color.red*255/self.MAX_COLOR_VALUE,
+				'green': color.green*255/self.MAX_COLOR_VALUE,
+				'blue': color.blue*255/self.MAX_COLOR_VALUE,
+				'alpha': self.widget.get_alpha()*255/self.MAX_COLOR_VALUE
+			}
+		
+		return value
 		

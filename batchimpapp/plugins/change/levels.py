@@ -30,19 +30,24 @@ class Plugin(PluginSettingsBase):
 			value = 1.0,
 			digits = 2,
 			minimum = 0.01,
-			maximum = 10
+			maximum = 10,
+			step_increment = 0.01,
+			page_increment = 0.1,
+			climb_rate = 0.1
 		)
 		
 	def process(self, current_path, original_path, options):
-		print self.settings
-		command = MagickCommand(False).append('convert', current_path)
+		command = MagickCommand().append('convert', current_path)
 		
 		black_point = str(self.settings['black_point'])
 		white_point = str(self.settings['white_point'])
 		gamma = str(self.settings['gamma'])
 		
 		command.append('-level')
-		command.append(black_point + '%,' + white_point + '%,' + gamma)	
+		if command.gm:
+			command.append(black_point + ',' + gamma + ',' + white_point + '%')
+		else:
+			command.append(black_point + ',' + white_point + '%,' + gamma)
 		
 		command.append('bmp:' + self.tmp_file)
 		

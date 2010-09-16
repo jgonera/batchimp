@@ -19,15 +19,8 @@
           <object class="GtkTable" id="main_table">
             <property name="visible">True</property>
             <property name="border_width">5</property>
-            <property name="n_columns">3</property>
             <property name="column_spacing">10</property>
             <property name="row_spacing">5</property>
-            <child>
-              <placeholder/>
-            </child>
-            <child>
-              <placeholder/>
-            </child>
             <child>
               <placeholder/>
             </child>
