@@ -63,8 +63,18 @@ class Plugin(PluginSettingsBase):
 		original_file_name = os.path.basename(original_path)
 		(original_basename, original_ext) = os.path.splitext(original_file_name)
 		
-		subprocess.call(('convert', '-size', '120x120', current_path, '-scale', '120x120', '-strip', '-auto-orient', os.path.join(self.directory, 'thumbnails', 't_' + original_basename + '.jpg')))
-		subprocess.call(('convert', current_path, '-auto-orient', os.path.join(self.directory, 'images', original_basename + '.jpg')))
+		MagickCommand().append(
+			'convert',
+			'-size', '120x120',
+			current_path,
+			'-scale', '120x120',
+			os.path.join(self.directory, 'thumbnails', 't_' + original_basename + '.jpg')
+		).run()
+		MagickCommand().append(
+			'convert',
+			current_path,
+			os.path.join(self.directory, 'images', original_basename + '.jpg')
+		).run()
 		
 		self.html = self.html + '''
 		<li>
