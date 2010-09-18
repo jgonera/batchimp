@@ -79,7 +79,7 @@ class Plugin(PluginSettingsBase):
 			command.append(size)
 			geometry = size
 			
-		command.append(current_path)
+		command.append('-')
 		
 		if not self.settings['keep_ratio']:
 			geometry = geometry + '!'
@@ -94,9 +94,7 @@ class Plugin(PluginSettingsBase):
 			command.append('-filter')
 			command.append(self.settings['filter'])
 		
-		command.append('bmp:' + self.tmp_file)
+		command.append('bmp:-')
 		
-		command.run()
-		
-		return self.tmp_file
+		return command.run(current_path)
 

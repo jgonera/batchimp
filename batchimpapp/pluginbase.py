@@ -17,7 +17,7 @@ class PluginError(Exception):
 
 class MagickCommand(object):
 	def __init__(self, use_gm=True):
-		if use_gm and True: # TODO: change this to some setting in GUI
+		if use_gm and False: # TODO: change this to some setting in GUI
 			self.args = ['gm']
 			self.gm = True
 		else:
@@ -32,8 +32,11 @@ class MagickCommand(object):
 		self.args.append('rgba(' + str(color['red']) + ',' + str(color['green']) + ',' + str(color['blue']) + ',' + str(color['alpha']) + ')')
 		return self
 	
-	def run(self):
-		return subprocess.call(self.args)
+	def run(self, input_data):
+		if not self.gm:
+			self.args.insert(len(self.args)-1, '-auto-orient')
+		p = subprocess.Popen(self.args, stdin=subprocess.PIPE, stdout=subprocess.PIPE)
+		return p.communicate(input_data)[0]
 
 
 class PluginBase(object):

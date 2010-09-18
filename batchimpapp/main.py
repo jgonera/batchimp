@@ -1,17 +1,18 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import pygtk
-pygtk.require("2.0")
-import gtk
 import os
 import random
 import subprocess
-import gobject
 import imp
 import tempfile
 import urllib
 from threading import Thread
+
+import pygtk
+pygtk.require("2.0")
+import gtk
+import gobject
 
 from batchimpapp.process import ProcessWindow
 

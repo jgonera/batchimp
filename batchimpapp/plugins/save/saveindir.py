@@ -46,7 +46,7 @@ class Plugin(PluginSettingsBase):
 		
 		file_path = os.path.join(self.settings['directory'], file_name)
 		
-		MagickCommand().append('convert', current_path, file_path).run()
+		MagickCommand().append('convert', '-', file_path).run(current_path)
 		
 		return current_path
 

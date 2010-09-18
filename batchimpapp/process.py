@@ -1,14 +1,15 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import pygtk
-pygtk.require("2.0")
-import gtk
-import gobject
 import os
 import subprocess
 from threading import Thread
 import time
+
+import pygtk
+pygtk.require("2.0")
+import gtk
+import gobject
 
 from batchimpapp.pluginbase import PluginError
 
@@ -39,7 +40,11 @@ class ProcessThread(Thread):
 			self.progress_window.current_progressbar.set_fraction(0.0)
 			
 			options = {}
-			current_path = original_path = item[2]
+			original_path = item[2]
+			
+			fp = open(original_path, 'r')
+			current_path = fp.read() #TODO: rename variable
+			fp.close()
 			
 			# iterate through 'operations_store' instead of 'operations'
 			# to include the changed order of operations
