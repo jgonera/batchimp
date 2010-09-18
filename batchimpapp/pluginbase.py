@@ -17,7 +17,7 @@ class PluginError(Exception):
 
 class MagickCommand(object):
 	def __init__(self, use_gm=True):
-		if use_gm and True: # TODO: change this to some setting in GUI
+		if use_gm and False: # TODO: change this to some setting in GUI
 			self.args = ['gm']
 			self.gm = True
 		else:
@@ -33,6 +33,8 @@ class MagickCommand(object):
 		return self
 	
 	def run(self):
+		if not self.gm:
+			self.args.insert(-1, '-auto-orient')
 		return subprocess.call(self.args)
 
 
