@@ -4,10 +4,8 @@ BatchImP
 BatchImP is a batch image processor, a simple application for performing batch
 operations on images. It's under the GNU GPL license, version 3.
 
-Author:
-	Juliusz Gonera
-Website:
-	http://github.com/jgonera/batchimp
+:Author: Juliusz Gonera
+:Website: http://github.com/jgonera/batchimp
 
 Installation
 ------------
