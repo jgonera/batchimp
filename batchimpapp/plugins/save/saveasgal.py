@@ -63,14 +63,14 @@ class Plugin(PluginSettingsBase):
 		original_file_name = os.path.basename(original_path)
 		(original_basename, original_ext) = os.path.splitext(original_file_name)
 		
-		MagickCommand().append(
+		MagickCommand(use_tmp_file=False).append(
 			'convert',
 			'-size', '120x120',
 			current_path,
 			'-scale', '120x120',
 			os.path.join(self.directory, 'thumbnails', 't_' + original_basename + '.jpg')
 		).run()
-		MagickCommand().append(
+		MagickCommand(use_tmp_file=False).append(
 			'convert',
 			current_path,
 			os.path.join(self.directory, 'images', original_basename + '.jpg')

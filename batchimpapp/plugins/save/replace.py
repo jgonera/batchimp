@@ -11,6 +11,6 @@ __api_version__ = '0.1'
 
 class Plugin(PluginBase):
 	def process(self, current_path, original_path, options):
-		MagickCommand().append('convert', current_path, original_path).run()
+		MagickCommand(use_tmp_file=False).append('convert', current_path, original_path).run()
 		return current_path
 

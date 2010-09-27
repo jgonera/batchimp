@@ -3,11 +3,16 @@
 
 import os.path
 import subprocess
+import tempfile
 
 import pygtk
 pygtk.require("2.0")
 import gtk
 import gobject
+
+
+_tmp_file = tempfile.NamedTemporaryFile()
+tmp_file = _tmp_file.name
 
 
 class PluginError(Exception):
@@ -16,7 +21,8 @@ class PluginError(Exception):
 
 
 class MagickCommand(object):
-	def __init__(self, use_gm=True):
+	def __init__(self, use_gm=True, use_tmp_file=True):
+		self.use_tmp_file = use_tmp_file
 		if use_gm and False: # TODO: change this to some setting in GUI
 			self.args = ['gm']
 			self.gm = True
@@ -33,14 +39,21 @@ class MagickCommand(object):
 		return self
 	
 	def run(self):
+		if self.use_tmp_file:
+			self.args.append('mpc:' + tmp_file)
 		if not self.gm:
 			self.args.insert(-1, '-auto-orient')
-		return subprocess.call(self.args)
+		
+		subprocess.call(self.args)
+		
+		if self.use_tmp_file:
+			return tmp_file
+		else:
+			return None
 
 
 class PluginBase(object):
-	def __init__(self, tmp_file, settings=None):
-		self.tmp_file = tmp_file
+	def __init__(self, settings=None):
 		self.settings = {}
 		self.init()
 		if settings:
@@ -71,7 +84,7 @@ class PluginBase(object):
 
 
 class PluginSettingsBase(PluginBase):
-	def __init__(self, tmp_file, settings=None):		
+	def __init__(self, settings=None):		
 		self.builder = gtk.Builder()
 		self.builder.add_from_file(os.path.join(os.path.dirname(__file__), 'pluginsettings.xml'))
 		self.builder.connect_signals(self)
@@ -87,7 +100,7 @@ class PluginSettingsBase(PluginBase):
 		self.advanced_x = 0
 		self._settings_getters = {}
 		
-		PluginBase.__init__(self, tmp_file, settings)
+		PluginBase.__init__(self, settings)
 		self.show_settings()
 		
 	def init(self):

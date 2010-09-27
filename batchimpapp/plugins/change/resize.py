@@ -94,9 +94,5 @@ class Plugin(PluginSettingsBase):
 			command.append('-filter')
 			command.append(self.settings['filter'])
 		
-		command.append('mpc:' + self.tmp_file)
-		
-		command.run()
-		
-		return self.tmp_file
+		return command.run()
 

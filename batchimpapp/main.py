@@ -1,36 +1,43 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import pygtk
-pygtk.require("2.0")
-import gtk
 import os
 import random
 import subprocess
-import gobject
 import imp
 import tempfile
 import urllib
 from threading import Thread
 
+import pygtk
+pygtk.require("2.0")
+import gtk
+import gobject
+
 from batchimpapp.process import ProcessWindow
+from batchimpapp.pluginbase import _tmp_file
+
 
 base_dir = os.path.dirname(os.path.realpath(__file__))
 
+
 class ThumbnailsThread(Thread):
-	def __init__(self, files_store, tmp_file):
+	def __init__(self, files_store):
 		Thread.__init__(self)
 		self.files_store = files_store
-		self.tmp_file = tmp_file
+		self.tmp_file = tempfile.NamedTemporaryFile()
+	
+	def __del__(self):
+		self.tmp_file.close()
 	
 	def run(self):
 		for item in self.files_store:
 			if item[0]:
 				continue
 			
-			rc = subprocess.call(('convert', '-size', '120x120', item[2], '-scale', '120x120', '-strip', '-auto-orient', 'bmp:' + self.tmp_file))
+			rc = subprocess.call(('convert', '-size', '120x120', item[2], '-scale', '120x120', '-strip', '-auto-orient', 'bmp:' + self.tmp_file.name))
 			if rc == 0:
-				gobject.idle_add(self.add_thumbnail, item, gtk.gdk.pixbuf_new_from_file(self.tmp_file))
+				gobject.idle_add(self.add_thumbnail, item, gtk.gdk.pixbuf_new_from_file(self.tmp_file.name))
 	
 	def add_thumbnail(self, item, pixbuf):
 		item[0] = pixbuf
@@ -46,8 +53,6 @@ class MainWindow(object):
 		global base_dir
 	
 		gobject.threads_init()
-
-		self.tmp_file = tempfile.NamedTemporaryFile()
 	
 		self.builder = gtk.Builder()
 		
@@ -115,7 +120,8 @@ class MainWindow(object):
 				self.plugins_store.append(plugins_dir[1], (plugin.NAME, len(self.plugins)-1, plugins_dir[2], True))
 		
 	def on_quit(self, widget, data=None):
-		self.tmp_file.close()
+		global _tmp_file
+		_tmp_file.close()
 			
 		gtk.main_quit()
 	
@@ -147,7 +153,7 @@ class MainWindow(object):
 			
 			self.files_store.append((None, os.path.basename(item), item))
 		
-		thumbnail_thread = ThumbnailsThread(self.files_store, self.tmp_file.name)
+		thumbnail_thread = ThumbnailsThread(self.files_store)
 		thumbnail_thread.daemon = True
 		thumbnail_thread.start()
 	
@@ -191,7 +197,7 @@ class MainWindow(object):
 		plugin_id = self.plugins_store.get_value(self.plugins_combobox.get_active_iter(), 1)
 		plugin_save = self.plugins_store.get_value(self.plugins_combobox.get_active_iter(), 2)
 		plugin = self.plugins[plugin_id]
-		self.operations[self.operation_id] = plugin.Plugin(self.tmp_file.name)
+		self.operations[self.operation_id] = plugin.Plugin()
 		self.operations_store.append((plugin.NAME, self.operation_id, plugin_save))
 		
 		self.operation_id += 1
