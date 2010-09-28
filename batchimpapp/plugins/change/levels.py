@@ -49,9 +49,5 @@ class Plugin(PluginSettingsBase):
 		else:
 			command.append(black_point + ',' + white_point + '%,' + gamma)
 		
-		command.append('bmp:' + self.tmp_file)
-		
-		command.run()
-			
-		return self.tmp_file
+		return command.run()
 

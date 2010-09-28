@@ -51,9 +51,5 @@ class Plugin(PluginSettingsBase):
 		command.append('-rotate')
 		command.append(degrees)
 		
-		command.append('bmp:' + self.tmp_file)
-		
-		command.run()
-			
-		return self.tmp_file
+		return command.run()
 

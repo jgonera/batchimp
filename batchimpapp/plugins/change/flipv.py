@@ -11,12 +11,9 @@ __api_version__ = '0.1'
 
 class Plugin(PluginBase):
 	def process(self, current_path, original_path, options):
-		MagickCommand().append(
+		return MagickCommand().append(
 			'convert',
 			current_path,
-			'-flip',
-			'bmp:' + self.tmp_file
+			'-flip'
 		).run()
-			
-		return self.tmp_file
 

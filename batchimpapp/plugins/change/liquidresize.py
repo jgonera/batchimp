@@ -48,8 +48,7 @@ class Plugin(PluginSettingsBase):
 		if not self.settings['keep_ratio']:
 			geometry = geometry + '!'
 		
-		command.append('-liquid-rescale', geometry, 'bmp:' + self.tmp_file)
-		command.run()
-			
-		return self.tmp_file
+		command.append('-liquid-rescale', geometry)
+		
+		return command.run()
 
