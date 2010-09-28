@@ -36,6 +36,8 @@ class Plugin(PluginSettingsBase):
 			climb_rate = 0.1
 		)
 		
+		self.show_settings()
+		
 	def process(self, current_path, original_path, options):
 		command = MagickCommand().append('convert', current_path)
 		

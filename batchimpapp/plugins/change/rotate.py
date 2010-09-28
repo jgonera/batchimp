@@ -35,6 +35,8 @@ class Plugin(PluginSettingsBase):
 			]
 		)
 		
+		self.show_settings()
+		
 	def process(self, current_path, original_path, options):
 		command = MagickCommand().append('convert', current_path)
 		

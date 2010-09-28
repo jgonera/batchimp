@@ -26,6 +26,8 @@ class Plugin(PluginSettingsBase):
 			label = 'Gallery name:',
 			value = 'Gallery'
 		)
+		
+		self.show_settings()
 	
 	def prepare(self):
 		self.directory = os.path.join(self.settings['directory'], self.settings['gallery_name'])

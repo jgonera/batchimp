@@ -33,6 +33,8 @@ class Plugin(PluginSettingsBase):
 			label = 'Keep aspect _ratio',
 			value = False
 		)
+		
+		self.show_settings()
 
 	def process(self, current_path, original_path, options):
 		command = MagickCommand(False).append('convert', current_path)

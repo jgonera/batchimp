@@ -101,7 +101,6 @@ class PluginSettingsBase(PluginBase):
 		self._settings_getters = {}
 		
 		PluginBase.__init__(self, settings)
-		self.show_settings()
 		
 	def init(self):
 		raise NotImplementedError("Need to initialize settings in 'init' method!")

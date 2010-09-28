@@ -34,6 +34,8 @@ class Plugin(PluginSettingsBase):
 %e - original file extension'''
 		)
 		
+		self.show_settings()
+		
 	def process(self, current_path, original_path, options):
 		file_name = self.settings['file_name']
 		original_file_name = os.path.basename(original_path)
