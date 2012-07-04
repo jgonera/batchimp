@@ -332,4 +332,13 @@ class ColorButtonField(FieldBase):
 			}
 		
 		return value
+
+
+class SaveFormatSettings(object):
+	def __init__(self, plugin):
+		SpinButtonField(self,
+			name = 'jpeg_quality',
+			label = 'JPEG Quality:',
+			value = 80
+		)
 		

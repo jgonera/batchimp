@@ -23,7 +23,7 @@ setup(
 		"Topic :: Desktop Environment :: Gnome",
 		"Topic :: Multimedia :: Graphics :: Graphics Conversion"
 	],
-	long_description = open("README.txt").read(),
+	long_description = open("README.rst.txt").read(),
 	license = "GPLv3",
 	
 	packages = ["batchimpapp", "batchimpapp.plugins"],
